@@ -43,6 +43,28 @@ class Board extends React.Component {
     }
 }
 
+class History extends React.Component {
+    render() {
+        const moves = this.props.history.map((step, move) => {
+            const desc = move ?
+                'Go to move #' + move :
+                'Go to game start';
+            const isSelected = move === this.props.stepNumber;
+            return (
+                <li key={move}>
+                    <button
+                        className={isSelected ? "history-selected" : ""}
+                        onClick={() => this.props.jumpTo(move)}>{desc}</button>
+                </li>
+            )
+        })
+
+        return (
+            <ol>{moves}</ol>
+        )
+    }
+}
+
 class Game extends React.Component {
     constructor(props) {
         super(props);
@@ -86,17 +108,6 @@ class Game extends React.Component {
         const current = history[this.state.stepNumber];
         const winner = calculateWinner(current.squares)
 
-        const moves = history.map((step, move) => {
-            const desc = move ?
-                'Go to move #' + move :
-                'Go to game start';
-            return (
-                <li key={move}>
-                    <button onClick={() => this.jumpTo(move)}>{desc}</button>
-                </li>
-            )
-        })
-
         let status;
         if (winner) {
             status = 'Winner: ' + winner;
@@ -114,7 +125,11 @@ class Game extends React.Component {
                 </div>
                 <div className="game-info">
                     <div>{status}</div>
-                    <ol>{moves}</ol>
+                    <History
+                        history={history}
+                        stepNumber={this.state.stepNumber}
+                        jumpTo={(i) => this.jumpTo(i)}
+                    />
                 </div>
             </div>
         );
